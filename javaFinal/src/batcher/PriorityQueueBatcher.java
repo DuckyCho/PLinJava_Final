@@ -20,15 +20,17 @@ public class PriorityQueueBatcher implements Ibatcher{
 			
 			if(tmpSeller.sellerQueue.isEmpty()){
 			
-				int previousMaxCustomerWaitingTime = -1;
-				int previousMaxWaitingCustomerPos = -1;
-				
+				int previousMaxCustomerWaitingTime = 0;
+				int previousMaxWaitingCustomerPos = 0;
+				int previousTrainWaitingTime = Define.infinity;
 									
 				for(int i = 0 ; i < lineQueue.getSize() && !lineQueue.isEmpty() ; i++ ){
 					
-					int customerWaitingTime = lineQueue.getCustomer(i).getCustomerTimeStatus(Define.ticketWaitingTime);	
-					
-					if( previousMaxCustomerWaitingTime < customerWaitingTime ){
+					Customer tmpCustomer = lineQueue.getCustomer(i);
+					int customerWaitingTime = tmpCustomer.getCustomerTimeStatus(Define.ticketWaitingTime);	
+					int trainWaitingTime = Define.trainInterval - ( ( currentPhase + tmpCustomer.getTicketOpTime() ) % Define.trainInterval ); 
+							
+					if( (1/ (previousMaxCustomerWaitingTime+1) )* ( previousMaxCustomerWaitingTime+previousTrainWaitingTime )  > (1/ (customerWaitingTime+1))*  (customerWaitingTime + trainWaitingTime) ){
 						previousMaxCustomerWaitingTime = customerWaitingTime;
 						previousMaxWaitingCustomerPos = i;
 					}
@@ -47,8 +49,8 @@ public class PriorityQueueBatcher implements Ibatcher{
 		}
 		
 		if ( !lineQueue.isEmpty()){
-			lineQueue.increaseCustomerTimeInQueue(Define.ticketWaitingTime);
-			lineQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime);
+			lineQueue.increaseCustomerTimeInQueue(Define.ticketWaitingTime,Define.first);
+			lineQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime,Define.first);
 		}
 	}
 }

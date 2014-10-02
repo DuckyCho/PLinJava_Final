@@ -38,8 +38,8 @@ public class FIFOBatcher implements Ibatcher{
 		}
 		
 		if ( !lineQueue.isEmpty()){
-			lineQueue.increaseCustomerTimeInQueue(Define.ticketWaitingTime);
-			lineQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime);
+			lineQueue.increaseCustomerTimeInQueue(Define.ticketWaitingTime,Define.first);
+			lineQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime,Define.first);
 		}
 }
 

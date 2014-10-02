@@ -57,10 +57,10 @@ public class TimerQueue implements Iqueue{
 	}
 	
 	@Override
-	public void increaseCustomerTimeInQueue(int i) {
+	public void increaseCustomerTimeInQueue(int i, int from) {
 		int tmp;
 		
-		for(int k = 1 ; k < this.queue.size(); k ++){
+		for(int k = from ; k < this.queue.size(); k ++){
 			tmp = this.queue.get(k).customerTimeStatus.get(i);
 			this.queue.get(k).customerTimeStatus.set(i, tmp+1);
 		}

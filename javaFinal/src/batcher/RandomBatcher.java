@@ -36,6 +36,10 @@ public class RandomBatcher implements Ibatcher{
 				
 		}
 		
+		if ( !lineQueue.isEmpty()){
+			lineQueue.increaseCustomerTimeInQueue(Define.ticketWaitingTime,Define.first);
+			lineQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime,Define.first);
+		}
 		
 	}
 

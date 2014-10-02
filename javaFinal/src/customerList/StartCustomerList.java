@@ -2,11 +2,9 @@ package customerList;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 import queue.Iqueue;
 import queue.Queue;
 import station.Station;
-import station.StationList;
 import customer.Customer;
 import define.Define;
 import fileIO.CustomerFileReader;
@@ -34,44 +32,27 @@ public class StartCustomerList {
 		return this.initialTotalCustomerCount;
 	}
 	
-	public void moveCustomerToLineQueue(int phase, StationList sl ){
+	public void moveCustomerToLineQueue(int phase, Station station){
 		
 		Customer tmp;
 		int customerStartTime;
-		String startStationName;
-		Iqueue startStationLineQueue;
+		Iqueue stationLineQueue;
 		
 		while ( !this.startCustomer.isEmpty() ){ 
 			
 			tmp = this.startCustomer.getCustomer(Define.first);
 			customerStartTime = tmp.getStartTime();
-			startStationName = tmp.getStartStation();
+			stationLineQueue = station.lineQueue;
 			
-			
-			try{
-				int stationOrder = Define.station.get(startStationName);
-				Station startStation = sl.getStation(stationOrder);
-				startStationLineQueue = startStation.lineQueue;
-				if(customerStartTime == phase){
-					tmp = this.startCustomer.dequeue();
-					startStationLineQueue.enqueue(tmp);
-					sl.totalCustomer++;
-					startStation.totalCustomerInStation++;
-				}
-				
-				else
-					break;
-			
-			}catch(NullPointerException e){
-			
-				this.startCustomer.dequeue();
-				
+			if(customerStartTime == phase){
+				tmp = this.startCustomer.dequeue();
+				stationLineQueue.enqueue(tmp);
+				station.totalCustomerInStation++;
 			}
 			
-			
-			
-			
-			
+			else
+				break;
+					
 		}
 		
 	}

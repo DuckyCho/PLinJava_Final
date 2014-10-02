@@ -14,6 +14,6 @@ public interface Iqueue {
 	public abstract boolean isEmpty();
 	//queue에 들어있는 customer의 수
 	public abstract int getSize();
-	//큐에 들어있는 customer들의 time status중 i 번째 옵션의 값을 1증
-	public abstract void increaseCustomerTimeInQueue(int i);
+	//큐에 들어있는 customer들의 time status중 i 번째 옵션의 값을 from번째 사람부터 1증
+	public abstract void increaseCustomerTimeInQueue(int i, int from);
 }

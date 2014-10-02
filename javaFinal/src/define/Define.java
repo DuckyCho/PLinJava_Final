@@ -13,6 +13,7 @@ public class Define {
 	public static final String comma = ",";
 	public static final String newline = "\n";
 	public static final int first = 0;
+	public static final int second = 1;
 	public static final int trainInterval = 3;
 	public static final int infinity = 999999999;
 	//Customer
@@ -54,7 +55,7 @@ public class Define {
 	public static final int FIFOBatcher = 3;
 	
 	//여기서 정책을 결정할 수 있다.
-	public static final int batcherType = Define.RoundRobinBatcher;	
+	public static final int batcherType = Define.FIFOBatcher;	
 	
 	
 	

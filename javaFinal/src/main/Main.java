@@ -2,7 +2,8 @@ package main;
 
 
 import phase.Phase;
-import station.StationList;
+import station.Station;
+import ticketSeller.TicketSeller;
 import trainSystem.TrainSystem;
 import customerList.EndCustomerList;
 import customerList.StartCustomerList;
@@ -19,24 +20,25 @@ public class Main {
 		EndCustomerList travelEndCustomers = EndCustomerList.getInstance();
 		CustomerFileReader cfr = CustomerFileReader.getInstance();
 		Phase phase = Phase.getInstance();
-		StationList stations = StationList.getInstance();
+		Station station = Station.getInstance();
 		TrainSystem trainSystem = TrainSystem.getInstance();
 		
-		
+	
 		dij.DijkstraMain();
 		initialCustomers.setStartCustomerList(cfr);
-		stations.setStation();
 		
 
 		while( travelEndCustomers.getEndPeopleCount() < initialCustomers.getInitialTotalCustomerCount() ){
-		
+
 			int currentPhase = phase.getPhase();
 			
 			trainSystem.arrivalCheck(currentPhase);
-			initialCustomers.moveCustomerToLineQueue(currentPhase,stations);
-			stations.operate(currentPhase);
+			initialCustomers.moveCustomerToLineQueue(currentPhase,station);
+			station.operate(currentPhase);
 			
-			stations.printStationInfo();
+			
+			System.out.println(station);
+			
 			phase.nextPhase();
 			
 	

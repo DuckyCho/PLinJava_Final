@@ -18,20 +18,26 @@ public class TicketSeller {
 	
 	public void operate(Iqueue platformQueue, int phase){
 		if(!this.sellerQueue.isEmpty()){
+			int beforMoveCount = platformQueue.getSize();
 			moveCustomerToPlatformQueue(platformQueue,phase);
+			int afterMoveCount = platformQueue.getSize();
 			
-			if(this.sellerQueue.getSize() > 1){
-				increaseCustomerWaitingTime();
+			if( !this.sellerQueue.isEmpty() &&
+				afterMoveCount != beforMoveCount){
+				increaseCustomerWaitingTime(Define.first);
 				
+			}
+			else{
+				increaseCustomerWaitingTime(Define.second);
 			}
 		}
 	}
 	
 	
 	
-	public void increaseCustomerWaitingTime(){
-		this.sellerQueue.increaseCustomerTimeInQueue(Define.ticketWaitingTime);
-		this.sellerQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime);
+	public void increaseCustomerWaitingTime(int from){
+		this.sellerQueue.increaseCustomerTimeInQueue(Define.ticketWaitingTime,from);
+		this.sellerQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime,from);
 	}
 	
 		
@@ -46,4 +52,25 @@ public class TicketSeller {
 		}
 		
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		
+		result.append("TicketSeller NO."+this.sellerNum+Define.newline);
+		
+		if(this.sellerQueue.isEmpty())
+			result.append("empty");
+		else{
+			for(int i =0 ; i < this.sellerQueue.getSize() ; i++){
+				result.append(this.sellerQueue.getCustomer(i).toString() + Define.newline);
+			}
+		}
+		
+		result.append(Define.newline);
+		return result.toString();
+	}
+	
+	
+	
 }

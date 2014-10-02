@@ -8,22 +8,27 @@ import queue.Queue;
 import ticketSeller.TicketSeller;
 import trainSystem.Train;
 import trainSystem.TrainSystem;
-import batcher.*;
+import batcher.FIFOBatcher;
+import batcher.Ibatcher;
+import batcher.PriorityQueueBatcher;
+import batcher.RandomBatcher;
+import batcher.RoundRobinBatcher;
 import customer.Customer;
 import define.Define;
 
-public class Station implements Runnable {
-	public String name;
+public class Station {
+	
 	public Queue lineQueue;
 	public Ibatcher batcher;
 	public ArrayList<TicketSeller> ticketSellers;
 	public FlushQueue platformQueue;
 	public int totalCustomerInStation;
+	private static Station instance = new Station();
 	
-	public Station(String name){
-		
-		this.name = name;
-		
+	
+	private Station(){
+	
+			
 		this.lineQueue = new Queue();
 		
 		switch(Define.batcherType){
@@ -57,18 +62,25 @@ public class Station implements Runnable {
 		this.totalCustomerInStation = 0;
 	}
 	
+	public static Station getInstance(){
+		return Station.instance;
+	}
+	
 	
 	public void operate(int currentPhase){
-		this.batcher.moveCustomerToSellerQueue(currentPhase ,this.lineQueue, this.ticketSellers);
 		for(int i = 0  ; i < this.ticketSellers.size() ; i ++){
 			this.ticketSellers.get(i).operate(this.platformQueue, currentPhase);
 		}
 		this.moveCustomerToTrain(currentPhase,this.platformQueue);
+		
+		this.batcher.moveCustomerToSellerQueue(currentPhase ,this.lineQueue, this.ticketSellers);
+		
 	}
 	
 	public void moveCustomerToTrain(int currentPhase, FlushQueue platformQueue){
 		
 		if(currentPhase % Define.trainInterval == 0 ){
+			
 			ArrayList<Customer> tmpClist = platformQueue.dequeueAll();
 			TrainSystem ts = TrainSystem.getInstance();
 			
@@ -79,8 +91,8 @@ public class Station implements Runnable {
 			}
 		}
 		else{
-			platformQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime);
-			platformQueue.increaseCustomerTimeInQueue(Define.trainWaitingTime);
+			platformQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime,Define.first);
+			platformQueue.increaseCustomerTimeInQueue(Define.trainWaitingTime,Define.first);
 		}
 	}
 	
@@ -88,9 +100,9 @@ public class Station implements Runnable {
 	@Override
 	public String toString() {
 		StringBuilder stationInfo = new StringBuilder();
+		Phase phase = Phase.getInstance();
+		stationInfo.append("CurrentPhase : "+phase.getPhase()+Define.newline);
 		
-		stationInfo.append(String.format("%12s",(this.name+"역")));
-		stationInfo.append(Define.tab);
 		stationInfo.append("LineQueue 대기 인원 : ");
 		stationInfo.append(lineQueue.getSize());
 		stationInfo.append(Define.tab);
@@ -108,6 +120,7 @@ public class Station implements Runnable {
 		stationInfo.append(platformQueue.getSize());
 		stationInfo.append(Define.tab);
 		
+		
 		stationInfo.append("총 대기 인원 : ");
 		stationInfo.append(this.totalCustomerInStation);
 		stationInfo.append(Define.tab);
@@ -116,10 +129,4 @@ public class Station implements Runnable {
 	}
 
 
-	@Override
-	public void run() {
-		Phase phase = Phase.getInstance();
-		this.operate(phase.getPhase());
-		
-	}
 }
