@@ -3,6 +3,7 @@ package queue;
 import java.util.ArrayList;
 
 import customer.Customer;
+import define.Define;
 
 
 public class Queue implements Iqueue{
@@ -16,7 +17,7 @@ public class Queue implements Iqueue{
 	
 	@Override
 	public Customer dequeue() {
-		Customer dequeued = this.queue.remove(0);
+		Customer dequeued = this.queue.remove(Define.first);
 		return dequeued;
 	}
 

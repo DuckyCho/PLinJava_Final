@@ -51,10 +51,10 @@ public class Define {
 	public static final int RoundRobinBatcher = 0;
 	public static final int PriorityQueueBatcher = 1;
 	public static final int RandomBatcher = 2;
+	public static final int FIFOBatcher = 3;
 	
 	//여기서 정책을 결정할 수 있다.
-	public static final int batcherType = Define.RoundRobinBatcher;
-	
+	public static final int batcherType = Define.RoundRobinBatcher;	
 	
 	
 	

@@ -8,10 +8,7 @@ import queue.Queue;
 import ticketSeller.TicketSeller;
 import trainSystem.Train;
 import trainSystem.TrainSystem;
-import batcher.Ibatcher;
-import batcher.PriorityQueueBatcher;
-import batcher.RandomBatcher;
-import batcher.RoundRobinBatcher;
+import batcher.*;
 import customer.Customer;
 import define.Define;
 
@@ -41,6 +38,10 @@ public class Station implements Runnable {
 				
 			case Define.RandomBatcher : 
 				this.batcher = new RandomBatcher();
+				break;
+				
+			case Define.FIFOBatcher : 
+				this.batcher = new FIFOBatcher();
 				break;
 			
 		}

@@ -20,7 +20,7 @@ public class RandomBatcher implements Ibatcher{
 		
 		while(!lineQueue.isEmpty()){
 			int randomNum = rd.nextInt(Define.theNumberOfTicketSeller);
-			System.out.println("!!!!"+randomNum);
+			
 			tmpSeller = sellers.get(randomNum);
 			tmpCustomer = lineQueue.dequeue();
 			

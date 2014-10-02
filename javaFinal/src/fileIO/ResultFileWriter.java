@@ -93,6 +93,7 @@ public class ResultFileWriter {
 			newLine.append(tmp.getCustomerTimeStatus(Define.endTime));
 			newLine.append(Define.newline);
 			try {
+				System.out.println(tmp);
 				this.bw.write(newLine.toString());
 				this.bw.flush();
 			} catch (IOException e) {

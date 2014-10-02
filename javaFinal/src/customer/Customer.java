@@ -49,6 +49,10 @@ public class Customer {
 		return this.ticketOpTime;
 	}
 	
+	public void setTicketOpTime(int value){
+		this.ticketOpTime =value;
+	}
+	
 	
 	public String getStartStation(){
 		return this.startStation;

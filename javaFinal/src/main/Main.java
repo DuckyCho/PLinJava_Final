@@ -27,7 +27,7 @@ public class Main {
 		initialCustomers.setStartCustomerList(cfr);
 		stations.setStation();
 		
-		
+
 		while( travelEndCustomers.getEndPeopleCount() < initialCustomers.getInitialTotalCustomerCount() ){
 		
 			int currentPhase = phase.getPhase();

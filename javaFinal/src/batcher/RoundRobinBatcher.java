@@ -9,36 +9,59 @@ import define.Define;
 
 public class RoundRobinBatcher implements Ibatcher {
 
-	public int sellerNum;
 	
-	public RoundRobinBatcher(){
-		this.sellerNum = 0;
-	}
 	
 	@Override
 	public void moveCustomerToSellerQueue(int currentPhase, Queue lineQueue,
 			ArrayList<TicketSeller> sellers) {
 		
-		Customer tmpCustomer;
-		TicketSeller tmpSeller;
-		
-		
-		while ( !lineQueue.isEmpty()){
-				this.sellerNum = this.sellerNum % Define.theNumberOfTicketSeller;
-				tmpSeller = sellers.get(this.sellerNum); 
-				tmpCustomer = lineQueue.dequeue();
-				if(tmpSeller.sellerQueue.isEmpty())
-					tmpCustomer.setCustomerTimeStatus(Define.ticketOpStartTime, currentPhase);
-				else{
-					Customer last = tmpSeller.sellerQueue.getCustomer(tmpSeller.sellerQueue.getSize()-1);
-					int startT = last.getCustomerTimeStatus(Define.ticketOpStartTime) + last.getTicketOpTime();
-					tmpCustomer.setCustomerTimeStatus(Define.ticketOpStartTime, startT);
+		if( !lineQueue.isEmpty()){
+			Customer tmpCustomer;
+			
+			for(int i = 0 ; i < Define.theNumberOfTicketSeller  && !lineQueue.isEmpty() ; i++ ){
+				
+				TicketSeller tmpSeller = sellers.get(i);
+				
+				if( currentPhase % Define.trainInterval == 0 && !tmpSeller.sellerQueue.isEmpty() ){
+					
+					tmpCustomer = tmpSeller.sellerQueue.getCustomer(Define.first);
+					int ticketingDuration;
+					ticketingDuration = currentPhase - tmpCustomer.getCustomerTimeStatus(Define.ticketOpStartTime);
+					int tmpCustomerTicketOptime = tmpCustomer.getTicketOpTime();
+					
+					if(ticketingDuration >= Define.trainInterval &&
+						tmpCustomerTicketOptime - ticketingDuration != 0 ){
+						
+						tmpCustomer = tmpSeller.sellerQueue.dequeue();
+						tmpCustomer.setTicketOpTime(tmpCustomerTicketOptime - ticketingDuration);
+						lineQueue.enqueue(tmpCustomer);
+						
+						tmpCustomer = lineQueue.dequeue();
+						tmpCustomer.setCustomerTimeStatus(Define.ticketOpStartTime, currentPhase);
+						tmpSeller.sellerQueue.enqueue(tmpCustomer);
+						
+					}
+					
 				}
 				
-				tmpSeller.sellerQueue.enqueue(tmpCustomer);
-				this.sellerNum++;
-			}
+				else if( tmpSeller.sellerQueue.isEmpty() ){
+					tmpCustomer = lineQueue.dequeue();
+					tmpCustomer.setCustomerTimeStatus(Define.ticketOpStartTime, currentPhase);
+					tmpSeller.sellerQueue.enqueue(tmpCustomer);
+				}
 				
+			}
+			
+			if ( !lineQueue.isEmpty()){
+				lineQueue.increaseCustomerTimeInQueue(Define.ticketWaitingTime);
+				lineQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime);
+			}
+			
+			
 		}
+		
+		
+	}
+		
 	
 }

@@ -13,62 +13,42 @@ public class PriorityQueueBatcher implements Ibatcher{
 	public void moveCustomerToSellerQueue(int currentPhase, Queue lineQueue,
 			ArrayList<TicketSeller> sellers) {
 		
-			ArrayList<Integer> sellersWaitingTime = this.getSellersWaitingTime(currentPhase,sellers);
+
+		for(int j = 0 ; j < Define.theNumberOfTicketSeller && !lineQueue.isEmpty()  ; j++){
+		
+			TicketSeller tmpSeller = sellers.get(j);
 			
-			for(int p = 0 ; p < sellersWaitingTime.size() ; p++){
-				int minPos = 0;
+			if(tmpSeller.sellerQueue.isEmpty()){
+			
+				int previousMaxCustomerWaitingTime = -1;
+				int previousMaxWaitingCustomerPos = -1;
 				
-				for(int i = 0 ; i < sellersWaitingTime.size(); i++){
-					minPos = sellersWaitingTime.get(minPos) < sellersWaitingTime.get(i) ? minPos : i;			
-				}
-				
-				int previousCusTrainWait = Define.infinity;
-				int valuePersonNum = 0;
-				
-				for(int j = 0  ; j < lineQueue.getSize() ; j++){
-					Customer tmpCus = lineQueue.getCustomer(j);
-					int tmpCusTrainWait =  Define.trainInterval - ( ( currentPhase + sellersWaitingTime.get(minPos) + tmpCus.getTicketOpTime() ) % Define.trainInterval );
-					previousCusTrainWait = previousCusTrainWait+sellersWaitingTime.get(minPos) > tmpCusTrainWait+sellersWaitingTime.get(minPos) ? tmpCusTrainWait : previousCusTrainWait;
-					valuePersonNum = previousCusTrainWait+sellersWaitingTime.get(minPos) > tmpCusTrainWait+sellersWaitingTime.get(minPos) ? j : valuePersonNum;
-				}
-				
-				if( !lineQueue.queue.isEmpty() ){
-					Customer tmpCustomer = lineQueue.queue.remove(valuePersonNum);
-					TicketSeller tmpSeller = sellers.get(minPos);
+									
+				for(int i = 0 ; i < lineQueue.getSize() && !lineQueue.isEmpty() ; i++ ){
 					
-					if(tmpSeller.sellerQueue.isEmpty())
-						tmpCustomer.setCustomerTimeStatus(Define.ticketOpStartTime, currentPhase);
-					else{
-						Customer last = tmpSeller.sellerQueue.getCustomer(tmpSeller.sellerQueue.getSize()-1);
-						int startT = last.getCustomerTimeStatus(Define.ticketOpStartTime) + last.getTicketOpTime();
-						tmpCustomer.setCustomerTimeStatus(Define.ticketOpStartTime, startT);
+					int customerWaitingTime = lineQueue.getCustomer(i).getCustomerTimeStatus(Define.ticketWaitingTime);	
+					
+					if( previousMaxCustomerWaitingTime < customerWaitingTime ){
+						previousMaxCustomerWaitingTime = customerWaitingTime;
+						previousMaxWaitingCustomerPos = i;
 					}
 					
-					tmpSeller.sellerQueue.enqueue(tmpCustomer);
-					sellersWaitingTime.set(minPos, Define.infinity);
+					else
+						continue;
+					
 				}
-		}
-	}
-	
-	
-	
-	public ArrayList<Integer> getSellersWaitingTime(int currentPhase, ArrayList<TicketSeller> sellers){
-		ArrayList<Integer> result = new ArrayList<Integer>();
+				
+				
+				Customer maxWaitingCustomer = lineQueue.queue.remove(previousMaxWaitingCustomerPos);
+				maxWaitingCustomer.setCustomerTimeStatus(Define.ticketOpStartTime, currentPhase);
+				tmpSeller.sellerQueue.enqueue(maxWaitingCustomer);
+			}
 		
-		for(int i = 0 ; i < Define.theNumberOfTicketSeller ; i++){
-			TicketSeller tmpSeller = sellers.get(i);
-			if(tmpSeller.sellerQueue.isEmpty()){
-				result.add(0);
-			}
-			else{
-				int lastIndex = tmpSeller.sellerQueue.getSize()-1;
-				Customer tmpCus = tmpSeller.sellerQueue.getCustomer(lastIndex);
-				int waitingTime = tmpCus.getCustomerTimeStatus(Define.ticketOpStartTime) + tmpCus.getTicketOpTime() - currentPhase;
-				result.add(waitingTime);
-			}
 		}
 		
-		return result;
+		if ( !lineQueue.isEmpty()){
+			lineQueue.increaseCustomerTimeInQueue(Define.ticketWaitingTime);
+			lineQueue.increaseCustomerTimeInQueue(Define.totalWaitingTime);
+		}
 	}
-
 }
